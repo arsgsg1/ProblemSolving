@@ -26,7 +26,7 @@ int Solution(int n)
 
 			temp[i + down][j] = min(temp[i][j] + 1, temp[i + down][j]);
 			temp[i][j + right] = min(temp[i][j] + 1, temp[i][j + right]);
-			
+			//test
 		}
 	}
 	return temp[n - 1][n - 1];
