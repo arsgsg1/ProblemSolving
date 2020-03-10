@@ -2,24 +2,19 @@
 #include <algorithm>
 #define MAX_LEN 1001
 using namespace std;
-void Print(int n, int dp[])
-{
-	for (int i = 0; i < n; i++)
-		printf("%d ", dp[i]);
-	printf("\n");
-}
+
 int Solution(int n, int dp[], int ta[], int pa[])
 {
 	int Max = 0;
 	for (int i = 1; i <= n; i++) {
-		printf("step[%d]\n", i);
-		for (int j = 0; j < i; j++) {
+		for (int j = 0; j <= i; j++) {
 			if (j + ta[j] <= n) {
 				dp[j + ta[j]] = max(dp[j] + pa[j], dp[j + ta[j]]);
 			}
+			dp[j + 1] = max(dp[j], dp[j + 1]);
 		}
-		Print(n, dp);
 	}
+	printf("%d", *max_element(dp, dp + n + 1));
 	return 0;
 }
 int main()
