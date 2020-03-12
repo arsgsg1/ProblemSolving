@@ -5,14 +5,13 @@
 using namespace std;
 #define MAX_VAL 1000000
 
-bool IsPossible(map<int, int>& digits, int val)
+bool IsPossible(int digits[], int val)
 {
 	int digit = 0;
 	while (val != 0)
 	{
-		digit = val % 10;
 		//못쓰는 버튼이라면
-		if (digits[digit])
+		if (digits[val % 10])
 			return false;
 		val /= 10;
 	}
@@ -21,9 +20,7 @@ bool IsPossible(map<int, int>& digits, int val)
 
 int Solution(vector<int>& btns, int channel)
 {
-	map<int, int> digits;
-	for (int i = 0; i < 10; i++) 
-		digits.insert(make_pair(i, 0));
+	int digits[10] = { 0,};
 	for (const auto& btn : btns)
 		digits[btn] = 1;
 
