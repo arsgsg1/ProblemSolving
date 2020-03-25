@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <algorithm>
 #include <queue>
 using namespace std;
@@ -16,6 +16,16 @@ int dx[] = { 0, 1, -1, 0, 0 };
 int dy[] = { 0, 0, 0, 1, -1 };	//동서남북
 int field[100][100] = { {0, 0}, };
 
+void Print(int width, int height)
+{
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			printf("%d ", field[i][j]);
+		}
+		printf("\n");
+	}
+}
+
 int Solution(queue<DIR>& q, int width, int height, DIR goal)
 {
 	DIR cur, next;
@@ -26,6 +36,7 @@ int Solution(queue<DIR>& q, int width, int height, DIR goal)
 		if (cur.row == goal.row && cur.col == goal.col) {
 			//좌표에 도달했을 때
 			//방향 비교
+			Print(width, height);
 			
 		}
 		
@@ -46,6 +57,9 @@ int Solution(queue<DIR>& q, int width, int height, DIR goal)
 						field[next.row][next.col] += field[cur.row][cur.col] + 2;
 					}
 					q.push(next);
+				}
+				else {
+					break;
 				}
 			}
 		}
@@ -70,6 +84,7 @@ int main()
 	start.col--;
 	goal.row--;
 	goal.col--;
+	field[start.row][start.col] = 1;
 	q.push(start);
 	Solution(q, width, height, goal);
 	return 0;
