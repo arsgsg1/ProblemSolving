@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <algorithm>
 #include <queue>
 using namespace std;
@@ -50,6 +50,7 @@ int Solution(queue<DIR>& q, int width, int height, DIR goal)
 			}
 		}
 	}
+	return 0;
 }
 
 int main()
@@ -65,6 +66,10 @@ int main()
 	}
 	cin >> start.row >> start.col >> start.dir;
 	cin >> goal.row >> goal.col >> goal.dir;
+	start.row--;
+	start.col--;
+	goal.row--;
+	goal.col--;
 	q.push(start);
 	Solution(q, width, height, goal);
 	return 0;
