@@ -35,7 +35,7 @@ int Solution(queue<DIR>& q, int width, int height, DIR goal)
 				next.row = cur.row + dy[dir[i]] * j;
 				next.dir = dir[i];
 				if (next.row >= width || next.col >= height || next.col < 0 || next.row < 0)
-					continue;
+					break;
 
 				if (field[next.row][next.col] == 0) {
 					//방향에 따른 명령횟수 증가 및 방문처리
