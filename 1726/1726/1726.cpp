@@ -18,6 +18,7 @@ int field[100][100] = { {0, 0}, };
 
 void Print(int width, int height)
 {
+	printf("===========\n");
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			printf("%d ", field[i][j]);
@@ -37,7 +38,17 @@ int Solution(queue<DIR>& q, int width, int height, DIR goal)
 			//좌표에 도달했을 때
 			//방향 비교
 			Print(width, height);
-			
+			if (cur.dir == goal.dir) {
+			}
+			else if ((cur.dir == 1 && goal.dir == 2) || (cur.dir == 2 && goal.dir == 1) ||
+				(cur.dir == 3 && goal.dir == 4) || (cur.dir == 4 && goal.dir == 3)) {
+				field[cur.row][cur.col] += 2;
+			}
+			else {
+				field[cur.row][cur.col] += 1;
+			}
+			Print(width, height);
+			break;
 		}
 		
 		for (int i = 0; i < 4; i++) {
@@ -59,12 +70,12 @@ int Solution(queue<DIR>& q, int width, int height, DIR goal)
 					q.push(next);
 				}
 				else {
-					break;
+					continue;
 				}
 			}
 		}
 	}
-	return 0;
+	return field[goal.row][goal.col] - 1;
 }
 
 int main()
@@ -86,6 +97,6 @@ int main()
 	goal.col--;
 	field[start.row][start.col] = 1;
 	q.push(start);
-	Solution(q, width, height, goal);
+	printf("%d", Solution(q, width, height, goal));
 	return 0;
 }
