@@ -1,107 +1,124 @@
 ﻿#include <iostream>
-#include <algorithm>
-#include <string>
 #include <queue>
+#include <stack>
 using namespace std;
-string D(const string& str)
+#define MAX_LEN 10002
+int itrack[MAX_LEN] = { 0, };
+char ctrack[MAX_LEN] = { 0, };
+queue<int> q;
+stack<int> s;
+
+inline int D(int num)
 {
-	int value = atoi(str.c_str());
-	if (value * 2 > 9999) {
-		value = (value * 2) % 10000;
+	int value;
+	if (num * 2 > 9999) {
+		value = (num * 2) % 10000;
 	}
 	else {
-		value *= 2;
+		value = num * 2;
 	}
-	char ch[10];
-	sprintf_s(ch, "%04d", value);
-	return ch;
+	return value;
 }
 
-string S(const string& str)
+inline int S(int num)
 {
-	int value = atoi(str.c_str());
-	if (value == 0) {
+	int value;
+	if (num == 0) {
 		value = 9999;
 	}
 	else {
-		value --;
+		value = num - 1;
 	}
-	char ch[10];
-	sprintf_s(ch, "%04d", value);
-	return ch;
+	return value;
 }
 
-string L(const string& str)
+inline int L(int num)
 {
-	string temp = str;
-	char ch = temp.at(0);
-	temp.erase(0, 1);
-	temp += ch;
-	return temp;
+	int value, digit;
+	digit = num / 1000;
+	value = num % 1000 * 10 + digit;
+	return value;
 }
 
-string R(const string& str)
+inline int R(int num)
 {
-	string temp = str;
-	char ch = temp.at(3);
-	temp.erase(3);
-	temp = ch + temp;
-	return temp;
+	int value, digit;
+	digit = num % 10;
+	value = num / 10 + digit * 1000;
+	return value;
 }
 
-const char* Solution(const string& start, const string& goal)
+void Print(int idx, int start, int itrack[], char ctrack[])
 {
-	queue<pair<string, string>> q;
-	string temp = "", value;
-	string d, s, l, r;
-	bool bField[10003] = { false };
-	int istart = atoi(start.c_str()), igoal = atoi(goal.c_str());
-	int id, is, il, ir;
-	q.push(make_pair(start, temp));
-	bField[istart] = true;
+	while (1)
+	{
+		if (idx == start)
+			break;
+		s.push(idx);
+		idx = itrack[idx];
+	}
+
+	while (!s.empty())
+	{
+		int cur = s.top();
+		s.pop();
+		printf("%c", ctrack[cur]);
+	}
+}
+
+void Solution(int start, int goal)
+{
+	itrack[start] = 999999;
+	q.push(start);
+	int cur, d, s, l, r;
 	while (!q.empty())
 	{
-		value = q.front().first;
-		temp = q.front().second;
-		if (atoi(value.c_str()) == igoal) {
-			printf("%s\n", temp.c_str());
+		cur = q.front();
+		q.pop();
+		if (cur == goal) {
+			Print(cur, start, itrack, ctrack);
+			printf("\n");
 			break;
 		}
-		q.pop();
-		d = D(value); id = atoi(d.c_str());
-		s = S(value); is = atoi(s.c_str());
-		l = L(value); il = atoi(l.c_str());
-		r = R(value); ir = atoi(r.c_str());
-		
-		if (!bField[id]) {
-			bField[id] = true;
-			q.push(make_pair(d, temp + "D"));
-		}if (!bField[is]) {
-			bField[is] = true;
-			q.push(make_pair(s, temp + "S"));
-		}if (!bField[il]) {
-			bField[il] = true;
-			q.push(make_pair(l, temp + "L"));
-		}if (!bField[ir]) {
-			bField[ir] = true;
-			q.push(make_pair(r, temp + "R"));
+		d = D(cur);
+		s = S(cur);
+		l = L(cur);
+		r = R(cur);
+		if (itrack[d] == -1) {
+			itrack[d] = cur;
+			ctrack[d] = 'D';
+			q.push(d);
+		}
+		if (itrack[s] == -1) {
+			itrack[s] = cur;
+			ctrack[s] = 'S';
+			q.push(s);
+		}
+		if (itrack[l] == -1) {
+			itrack[l] = cur;
+			ctrack[l] = 'L';
+			q.push(l);
+		}
+		if (itrack[r] == -1) {
+			itrack[r] = cur;
+			ctrack[r] = 'R';
+			q.push(r);
 		}
 	}
-	
-	return "";
 }
 
 int main()
 {
 	int TestCase;
-	int IntStart, IntGoal;
-	char start[100] = { 0 }, goal[100] = { 0 };
+	int start, goal;
 	cin >> TestCase;
 	for (int i = 0; i < TestCase; i++) {
-		cin >> IntStart >> IntGoal;
-		sprintf_s(start, "%04d", IntStart);
-		sprintf_s(goal, "%04d", IntGoal);
+		cin >> start >> goal;
+		fill(itrack, itrack + MAX_LEN, -1);
 		Solution(start, goal);
+		fill(ctrack, ctrack + MAX_LEN, 0);
+		queue<int> emptyQueue;
+		swap(q, emptyQueue);
 	}
 	return 0;
 }
