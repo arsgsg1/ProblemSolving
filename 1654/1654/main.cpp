@@ -1,11 +1,11 @@
 #include <iostream>
-#include <cmath>
 #include <vector>
+#include <cmath>
 using namespace std;
-long long K, N, Max = 0;
-bool Possible(const vector<long long>& v, long long length)
+int K, N;
+bool Possible(const vector<int>& v, long long length)
 {
-	long long sum = 0;
+	int sum = 0;
 	for (const auto& s : v) {
 		if (length > s)
 			continue;
@@ -17,10 +17,10 @@ bool Possible(const vector<long long>& v, long long length)
 	else
 		return false;
 }
-void BinSearch(vector<long long>& v)
+void BinSearch(const vector<int>& v)
 {
-	long long left = 1;
-	long long right = Max;
+	long long left = 0;
+	long long right = pow(2, 31) -1;
 	long long mid = (left + right) / 2;
 	while (left <= right) {
 		if (Possible(v, mid))
@@ -29,17 +29,14 @@ void BinSearch(vector<long long>& v)
 			right = mid - 1;
 		mid = (left + right) / 2;
 	}
-	printf("%lld\n", right);
+	printf("%lld\n", mid);
 }
 int main()
 {
-	scanf("%lld %lld", &K, &N);
-	vector<long long> v(K, 0);
-	for (int i = 0; i < K; i++) {
-		scanf("%lld", &v[i]);
-		if (Max < v[i])
-			Max = v[i];
-	}
+	scanf("%d %d", &K, &N);
+	vector<int> v(K, 0);
+	for (int i = 0; i < K; i++) 
+		scanf("%d", &v[i]);
 	BinSearch(v);
 	return 0;
 }
