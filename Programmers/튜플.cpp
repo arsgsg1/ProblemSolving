@@ -1,56 +1,46 @@
 #include <string>
 #include <vector>
+#include <iostream>
+#include <vector>
+#include <unordered_set>
 #include <algorithm>
-#include <sstream>
-#include <set>
-
 using namespace std;
-typedef struct Node {
-	int cnt;
-	string str;
-};
-bool cmp(const Node& n1, const Node& n2)
+unordered_set<int> se;
+bool cmp(vector<string>& v1, vector<string>& v2)
 {
-	return n1.cnt < n2.cnt;
+	return v1.size() < v2.size();
 }
 vector<int> solution(string s) {
 	vector<int> answer;
-	vector<Node> v;
-	int len = s.length();
-	int cnt = 0;
-	string str;
-	Node n;
-	bool start = false;
-	//¹®ÀÚ¿­ ÆÄ½Ì
-	for (int i = 1; i < len - 1; i++) {
-		if (s[i] == '{') {
-			start = true;
+	vector<string> parse;
+	vector<vector<string>> v;
+	string num;
+	for (const auto& c : s) {
+		if ('0' <= c && c <= '9') {
+			num += c;
 		}
-		else if (s[i] == '}') {
-			start = false;
-			n.cnt = cnt;
-			n.str = str;
-			cnt = 0;
-			str.clear();
-			v.push_back(n);
+		else if (c == ',') {
+			if (num.length()) {
+				parse.push_back(num);
+			}
+			num.clear();
 		}
-		else if (start == true && s[i] == ',') {
-			cnt++;
-			str += s[i];
-		}
-		else if (start == true && s[i] <= '9' && s[i] >= '0') {
-			str += s[i];
+		else if (c == '}') {
+			if (num.length()) {
+				parse.push_back(num);
+				num.clear();
+			}
+			if (parse.size())
+				v.push_back(parse);
+			parse.clear();
 		}
 	}
 	sort(v.begin(), v.end(), cmp);
-	set<int> items;
-	for (const auto& n : v) {
-		istringstream ss(n.str);
-		int num = 0;
-		while (getline(ss, str, ',')) {
-			num = atoi(str.c_str());
-			if (items.find(num) == items.end()) {
-				items.insert(num);
+	for (int i = 0; i < v.size(); i++) {
+		for (int j = 0; j < v[i].size(); j++) {
+			int num = stoi(v[i][j]);
+			if (se.find(num) == se.end()) {
+				se.insert(num);
 				answer.push_back(num);
 			}
 		}
