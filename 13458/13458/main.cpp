@@ -1,24 +1,31 @@
 #include <iostream>
 using namespace std;
-int A, B, C;
-int arr[1000000];
+int N, B, C;
+int arr[1000001];
 int main()
 {
-	scanf("%d", &A);
-	for (int i = 0; i < A; i++)
-		scanf("%d", &arr[i]);
-	scanf("%d %d", &B, &C);
-	long long cnt = 0;
-	for (int i = 0; i < A; i++) {
-		++cnt;
+	cin >> N;
+	int total = 0;
+	long long answer = 0;
+	for (int i = 0; i < N; i++) {
+		cin >> arr[i];
+		total += arr[i];
+	}
+	cin >> B >> C;
+	for (int i = 0; i < N; i++) {
+		answer++;
 		arr[i] -= B;
 	}
-	for (int i = 0; i < A; i++) {
-		if (arr[i] % C > 0)
-			++cnt;
-		if(arr[i] > 0)
-			cnt += arr[i] / C;
+	for (int i = 0; i < N; i++) {
+		if (arr[i] <= 0) {
+
+		}
+		else {
+			answer += arr[i] / C;
+			if (arr[i] % C != 0)
+				answer++;
+		}
 	}
-	printf("%lld\n", cnt);
+	printf("%lld\n", answer);
 	return 0;
 }
