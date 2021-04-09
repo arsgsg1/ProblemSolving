@@ -1,34 +1,34 @@
-#include <string>
+#include <iostream>
 #include <vector>
-#include <queue>
-#include<iostream>
-#include<cstdio>
-#include<algorithm>
 using namespace std;
-int N, M, a, b;
-int num = 0;
-vector<pair<int, int> > v[101];
-bool visited[101];
-
-void dfs(int x) {
-	for (int i = 0; i < v[x].size(); i++) {
-		if (visited[v[x][i].first] == false) {
-			visited[v[x][i].first] = true;
-			num++;
-			dfs(v[x][i].first);
+#define MAX_SIZE 101
+vector<int> graph[MAX_SIZE];
+int answer = 0;
+bool visit[MAX_SIZE];
+int N, M;
+void dfs(int idx)
+{
+	if (visit[idx])
+		return;
+	visit[idx] = true;
+	for (int i = 0; i < graph[idx].size(); i++) {
+		int next = graph[idx][i];
+		if (visit[next] == false) {
+			answer++;
+			dfs(next);
 		}
 	}
 }
-
-int main(void) {
-	cin >> N;
-	cin >> M;
+int main()
+{
+	cin >> N >> M;
+	int s, e;
 	for (int i = 0; i < M; i++) {
-		cin >> a >> b;
-		v[a].push_back(make_pair(b, b));
-		v[b].push_back(make_pair(a, a));
+		cin >> s >> e;
+		graph[s].push_back(e);
+		graph[e].push_back(s);
 	}
-	visited[1] = true;
 	dfs(1);
-	cout << num;
+	printf("%d\n", answer);
+	return 0;
 }
