@@ -1,55 +1,32 @@
 ﻿#include <iostream>
 #include <algorithm>
-#include <vector>
-#include <queue>
 using namespace std;
-bool bfs[1000] = { false };
-vector<int> v;
-queue<int> q;
-int n;
-
-void Print(int n)
-{
-	for (int i = 0; i < n; i++) {
-		printf("%d ", bfs[i]);
-	}
-	printf("\n============\n");
-}
-
-int Solution(vector<int>& v, int s, int m)
-{
-	int cur, next, dist[2], depth = 0, result = 0;
-	while (!q.empty())
-	{
-		cur = q.front();
-		q.pop();
-		dist[0] = v[depth];
-		dist[1] = -v[depth];
-		for (int i = 0; i < 2; i++) {
-			next = cur + dist[i];
-			if (next >= 0 && next <= m && !bfs[next]) {
-				bfs[next] = true;
-				q.push(next);
-				result = max(result, next);
-			}
-		}
-		Print(n);
-		depth++;
-	}
-	return result;
-}
-
+int N, S, M;
+int arr[101];
+int dp[101][1001];
 int main()
 {
-	int s, m, temp;
-	cin >> n >> s >> m;
-	for (int i = 0; i < n; i++) {
-		cin >> temp;
-		v.push_back(temp);
+	cin >> N >> S >> M;
+	dp[0][S] = 1;
+	dp[0][S] = 1;
+	for (int i = 1; i <= N; i++)
+		cin >> arr[i];
+	for (int i = 1; i <= N; i++) {
+		for (int j = 0; j <= M; j++) {
+			if (!dp[i - 1][j])
+				continue;
+			if (j - arr[i] >= 0)
+				dp[i][j - arr[i]] = true;
+			if (j + arr[i] <= M)
+				dp[i][j + arr[i]] = true;
+		}
 	}
-	bfs[s] = true;
-	q.push(s);
-	printf("%d\n", Solution(v, s, m));
+	for (int i = M; i >= 0; i--) {
+		if (dp[N][i]) {
+			printf("%d\n", i);
+			return 0;
+		}
+	}
+	printf("-1\n");
 	return 0;
 }
-
