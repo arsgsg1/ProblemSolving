@@ -1,29 +1,39 @@
 #include <iostream>
 #include <algorithm>
-typedef long long ll;
-#define endl '\n'
 using namespace std;
-const int sz = 1e4;
-int arr[sz], n, temp, idx, idx2;
-ll cnt;
-
-int main()
-{
-	ios::sync_with_stdio(false);
-	cin.tie(NULL); cout.tie(NULL);
-
+int n;
+int arr[10002];
+int main() {
+	cin.sync_with_stdio(0);
+	cin.tie(0);
 	cin >> n;
-	for (int i = 0; i<n; ++i)cin >> arr[i];
-	sort(arr, arr + n);
-
-	for (int i = 0; i<n - 2; ++i) {
-		for (int j = i + 1; j<n - 1; ++j) {
-			temp = (-1)*(arr[i] + arr[j]);
-			idx = lower_bound(arr + j + 1, arr + n, temp) - arr;
-			idx2 = upper_bound(arr + j + 1, arr + n, temp) - arr;
-			cnt += idx2 - idx;
+	for (int i = 1; i <= n; i++)
+		cin >> arr[i];
+	sort(arr + 1, arr + n + 1);
+	long long ans = 0;
+	for (int i = 1; i <= n - 2; i++) {
+		int temp = arr[i];
+		int start = i + 1;
+		int finish = n;
+		int max_idx = n;
+		while (start < finish) {
+			if (arr[start] + arr[finish] + temp == 0) {
+				if (arr[start] == arr[finish]) {
+					ans += finish - start;
+				}
+				else {
+					max_idx = lower_bound(arr + start, arr + n, arr[finish]) - arr;
+					ans += finish - max_idx + 1;
+				}
+				start++;
+			}
+			else if (arr[start] + arr[finish] + temp < 0) {
+				start++;
+			}
+			else {
+				finish--;
+			}
 		}
 	}
-	cout << cnt << endl;
-	return 0;
+	cout << ans;
 }
