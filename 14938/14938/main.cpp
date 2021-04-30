@@ -1,57 +1,72 @@
 #include <iostream>
 #include <algorithm>
-#include <vector>
+#include <string.h>
 using namespace std;
-#define MAX_SIZE 101
 #define INF 987654321
-int N, M, T[MAX_SIZE] = { 0, }, R;
-int dist[MAX_SIZE][MAX_SIZE] = { {0,0} };
-int ans = 0;
+#define MAX_SIZE 101
+int N, M, R;
+int item[MAX_SIZE];
+int field[MAX_SIZE][MAX_SIZE];
+bool visit[MAX_SIZE];
+int answer = 0;
 void setting()
 {
-	for (int i = 1; i < MAX_SIZE; i++) {
-		for (int j = 1; j < MAX_SIZE; j++) {
-			if(i != j)
-				dist[i][j] = INF;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			if (i == j)
+				field[i][j] = 0;
+			else
+				field[i][j] = INF;
 		}
 	}
 }
-void floyd()
+void floyd(int n)
 {
-	for (int k = 1; k <= N; k++) {
-		for (int i = 1; i <= N; i++) {
-			for (int j = 1; j <= N; j++) {
-				if (dist[i][j] > dist[i][k] + dist[k][j]) {
-					dist[i][j] = dist[i][k] + dist[k][j];
+	for (int k = 1; k <= n; k++) {
+		for (int i = 1; i <= n; i++) {
+			for (int j = 1; j <= n; j++) {
+				if (field[i][j] > field[i][k] + field[k][j]) {
+					field[i][j] = field[i][k] + field[k][j];
 				}
 			}
 		}
 	}
 }
+int dfs(int cur, int dist)
+{
+	int sum = 0;
+	if (visit[cur] == false) {
+		visit[cur] = true;
+		sum = item[cur];
+		for (int i = 1; i <= N; i++) {
+			if (cur == i)
+				continue;
+			else if(dist >= field[cur][i]){
+				sum += dfs(i, dist - field[cur][i]);
+			}
+		}
+	}
+	return sum;
+}
 int main()
 {
 	cin >> N >> M >> R;
-	for (int i = 1; i <= N; i++) {
-		cin >> T[i];
-	}
 	setting();
-	for (int i = 0; i < R; i++) {
+	for (int i = 1; i <= N; i++)
+		scanf("%d", &item[i]);
+	for (int i = 1; i <= R; i++) {
 		int s, e, d;
 		cin >> s >> e >> d;
-		dist[s][e] = d;
-		dist[e][s] = d;
+		field[s][e] = d;
+		field[e][s] = d;
 	}
-	floyd();
+	floyd(N);
+	int answer = 0;
 	for (int i = 1; i <= N; i++) {
-		int sum = T[i];
-		for (int j = 1; j <= N; j++) {
-			if (i == j)
-				continue;
-			if(dist[i][j] <= M)
-				sum += T[j];
-		}
-		ans = max(sum, ans);
+		memset(visit, false, sizeof(visit));
+		answer = max(answer, dfs(i, M));
 	}
-	printf("%d\n", ans);
+	
+	printf("%d\n", answer);
 	return 0;
 }
