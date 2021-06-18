@@ -1,35 +1,18 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
 using namespace std;
 int N;
-bool visit[9];
-vector<int> picked;
-void print()
-{
-	for (const auto& pick : picked) {
-		printf("%d ", pick);
-	}
-	printf("\n");
-}
-void dfs(int n)
-{
-	if (picked.size() == N) {
-		print();
-		return;
-	}
-	for (int i = 1; i <= N; i++) {
-		if (visit[i] == false) {
-			visit[i] = true;
-			picked.push_back(i);
-			dfs(i);
-			visit[i] = false;
-			picked.pop_back();
-		}
-	}
-}
+vector<int> comb;
 int main()
 {
 	cin >> N;
-	dfs(1);
+	for (int i = 1; i <= N; i++)
+		comb.push_back(i);
+	do {
+		for (const auto& i : comb)
+			printf("%d ", i);
+		printf("\n");
+	} while (next_permutation(comb.begin(), comb.end()));
 	return 0;
 }
