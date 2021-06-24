@@ -1,148 +1,147 @@
+/*
+- 다리의 길이는 2이상이어야 함
+- 다리의 방향은 중간에 바뀔 수 없음, 가로, 세로 둘 중에 하나
+- 다리의 양 끝은 섬과 인접해야 함
+output : 모든 섬을 연결하는 다리 길이의 최솟값, 연결이 불가능하면 -1
+
+각각의 섬을 구분하는 방법 : BFS
+가장 짧은 길이를 갖는 다리 <= 섬의 모든 칸마다 4방향으로 다리를 놓아봄 (포함)
+가장 짧은 길이를 갖는 다리를 찾는 방법 = 정렬
+모든 섬을 연결하는 = 크루스칼, 프림
+*/
 #include <iostream>
 #include <queue>
 #include <algorithm>
-#include <vector>
 using namespace std;
-int Height, Width;
-int arr[11][11];
-int visit[11][11];
+int W, H;
+int field[10][10];
+int island[10][10];
 int dirRow[] = { 1, 0, -1, 0 };
 int dirCol[] = { 0, 1, 0, -1 };
-struct bridge {
-	int from_row, from_col;
-	int to_row, to_col;
+int parent[100];
+typedef struct bridge {
 	int dist;
+	int fromRow, fromCol;
+	int toRow, toCol;
 };
-struct island {
-	int r, c;
-	int num;
-};
-vector<bridge> bridges;
-int parents[101];
-
-bool cmp(bridge& b1, bridge& b2)
+bool cmp(const bridge& b1, const bridge& b2)
 {
 	return b1.dist < b2.dist;
 }
-bool IsRange(int nr, int nc)
+int getParent(int x)
 {
-	if (nr >= 0 && nc >= 0 && nr < Height && nc < Width)
-		return true;
-	return false;
+	if (parent[x] == x)
+		return x;
+	return parent[x] = getParent(parent[x]);
 }
-vector<bridge> make_bridge(int row, int col)
+void _union(int a, int b)
 {
+	a = getParent(a);
+	b = getParent(b);
+	if (a < b)
+		parent[b] = a;
+	else
+		parent[a] = b;
+}
+bool _find(int a, int b)
+{
+	a = getParent(a);
+	b = getParent(b);
+	if (a == b)
+		return true;
+	else
+		return false;
+}
+void makeBridge(int row, int col, vector<bridge>& bridges)
+{
+	int nr, nc;
 	bridge b;
-	vector<bridge> result;
-	int nr, nc, dist = 0;
-	for (int dir = 0; dir < 4; dir++) {
-		dist = 1;
+	b.fromRow = row;
+	b.fromCol = col;
+	for (int i = 0; i < 4; i++) {
+		int dist = 1;
 		while (1) {
-			nr = row + dirRow[dir] * dist;
-			nc = col + dirCol[dir] * dist;
-			if (!IsRange(nr, nc))
+			nr = row + (dirRow[i] * dist);
+			nc = col + (dirCol[i] * dist);
+			if (island[nr][nc] == island[row][col])
 				break;
-			if (arr[nr][nc] == 1) {
-				if (dist > 2) {
-					b = { row, col, nr, nc, dist - 1 };
-					result.push_back(b);
-				}
+			else if (nr < 0 || nc < 0 || nr >= H || nc >= W)
+				break;
+			else if (1 <= island[nr][nc] && island[nr][nc] != island[row][col]) {
+				//섬 칸까지 포함했기 때문에 -1
+				dist--;
+				if (dist < 2)
+					break;
+				b.dist = dist;
+				b.toRow = nr;
+				b.toCol = nc;
+				bridges.push_back(b);
 				break;
 			}
 			dist++;
 		}
 	}
-	return result;
 }
-bool find_island(int row, int col, int number)
+void bfs(int row, int col, int cnt)
 {
-	island la = { row, col, number };
-	queue<island> q;
-	q.push(la);
-	visit[row][col] = number;
-	int r, c, nr, nc, n;
+	queue<pair<int, int>> q;
+	q.push({ row, col });
+	island[row][col] = cnt;
+	int r, c, nr, nc;
 	while (!q.empty()) {
-		r = q.front().r;
-		c = q.front().c;
-		n = q.front().num;
+		r = q.front().first;
+		c = q.front().second;
 		q.pop();
-		auto brs = make_bridge(r, c);
-		for (const auto& b : brs)
-			bridges.push_back(b);
-
 		for (int i = 0; i < 4; i++) {
 			nr = r + dirRow[i];
 			nc = c + dirCol[i];
-			if (nr < 0 || nc < 0 || nr >= Height || nc >= Width)
+			if (nr < 0 || nc < 0 || nr >= H || nc >= W)
 				continue;
-			if (arr[nr][nc] == 1 && visit[nr][nc] == 0) {
-				visit[nr][nc] = n;
-				la = { nr, nc, n };
-				q.push(la);
+			if (island[nr][nc] == 0 && field[nr][nc] == 1) {
+				q.push({ nr, nc });
+				island[nr][nc] = cnt;
 			}
 		}
 	}
-	return true;
-}
-int get_parent(int x)
-{
-	if (parents[x] == x)
-		return x;
-	return parents[x] = get_parent(parents[x]);
-}
-void union_parent(int a, int b)
-{
-	a = get_parent(a);
-	b = get_parent(b);
-	if (a < b) 
-		parents[b] = a;
-	else
-		parents[a] = b;
-}
-int find(int a, int b)
-{
-	a = get_parent(a);
-	b = get_parent(b);
-	if (a == b)
-		return 1;
-	else
-		return 0;
 }
 int main()
 {
-	cin >> Height >> Width;
-	for (int r = 0; r < Height; r++)
-		for (int c = 0; c < Width; c++)
-			cin >> arr[r][c];
-	for (int i = 0; i < 101; i++)
-		parents[i] = i;
-	int number = 1;
-	for (int r = 0; r < Height; r++) {
-		for (int c = 0; c < Width; c++) {
-			if (arr[r][c] == 1 && visit[r][c] == 0) {
-				find_island(r, c, number++);
+	cin >> H >> W;
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+			cin >> field[i][j];
+	for (int i = 0; i < 100; i++)
+		parent[i] = i;
+	int cnt = 1;
+	for (int i = 0; i < H; i++) {
+		for (int j = 0; j < W; j++) {
+			if (field[i][j] == 1 && island[i][j] == 0) {
+				bfs(i, j, cnt++);
+			}
+		}
+	}
+	vector<bridge> bridges;
+	for (int i = 0; i < H; i++) {
+		for (int j = 0; j < W; j++) {
+			if (field[i][j] == 1) {
+				makeBridge(i, j, bridges);
 			}
 		}
 	}
 	sort(bridges.begin(), bridges.end(), cmp);
-	int answer = 0;
-	for (int i = 0; i < bridges.size(); i++) {
-		auto &b = bridges[i];
-		int fr, fc, tr, tc;
-		fr = b.from_row, fc = b.from_col;
-		tr = b.to_row, tc = b.to_col;
-		if (!find(visit[fr][fc], visit[tr][tc])) {
-			union_parent(visit[fr][fc], visit[tr][tc]);
-			answer += b.dist;
+	int answer = 0, bridgeCnt = 0;
+	for (const auto& b : bridges) {
+		int dist = b.dist;
+		int from = island[b.fromRow][b.fromCol], to = island[b.toRow][b.toCol];
+		if (!_find(from, to)) {
+			answer += dist;
+			_union(from, to);
+			bridgeCnt++;
 		}
 	}
-	int island_number = get_parent(1);
-	for (int i = 2; i < number; i++) {
-		if (island_number != get_parent(i)) {
-			printf("-1\n");
-			return 0;
-		}
-	}
-	printf("%d\n", answer);
+	if (bridgeCnt != cnt - 2)
+		printf("%d\n", -1);
+	else
+		printf("%d\n", answer);
 	return 0;
 }
