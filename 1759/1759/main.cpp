@@ -1,65 +1,54 @@
 #include <iostream>
+#include <string>
 #include <vector>
 #include <algorithm>
 using namespace std;
+const char moum[] = { 'a', 'e', 'i', 'o', 'u' };
 int L, C;
-vector<char> charset;
-vector<char> vowels = { 'a', 'e', 'i', 'o', 'u' };
-bool IsPassword(vector<char>& picked)
+bool visit[15];
+bool canPassword(const string& str)
 {
-	/*
-	암호를 판단하는 기준
-	모음의 개수 >= 1
-	조합의 길이 - 모음의 개수 >= 2
-	*/
-	int cnt = 0;
-	for (const auto& ch1 : picked) {
-		for (const auto& ch2 : vowels) {
-			if (ch1 == ch2) {
-				++cnt;
-				break;
-			}
+	int m_cnt = 0, g_cnt = 0;
+	for (const auto& c : str) {
+		for (int i = 0; i < 5; i++) {
+			if (moum[i] == c)
+				m_cnt++;
 		}
 	}
-	if (cnt >= 1) {
-		if (picked.size() - cnt >= 2) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	else {
-		return false;
-	}
+
+	g_cnt = str.size() - m_cnt;
+	return m_cnt >= 1 && g_cnt >= 2;
 }
-void printPicked(vector<char>& picked)
+
+void backtrack(const vector<char>& v, string& picked, int idx)
 {
-	for (const auto& item : picked) {
-		printf("%c", item);
+	if (picked.size() == L) {
+		if (canPassword(picked)) {
+			cout << picked << endl;
+		}
 	}
-	printf("\n");
-}
-void pick(int n, vector<char>& picked, int toPick, int idx)
-{
-	if (toPick == 0 && IsPassword(picked)){	printPicked(picked); return; }
-	int smallest = picked.empty() ? 0 : idx + 1;
-	for (int next = smallest; next < n; ++next) {
-		picked.push_back(charset[next]);
-		pick(n, picked, toPick - 1, next);
-		picked.pop_back();
+	for (int i = idx; i < C; i++) {
+		if (visit[i] == false) {
+			visit[i] = true;
+			picked.push_back(v[i]);
+			backtrack(v, picked, i + 1);
+			visit[i] = false;
+			picked.pop_back();
+		}
 	}
 }
+
 int main()
 {
-	vector<char> picked;
-	cin >> L >> C;
-	char ch;
+	vector<char> alpha;
+	string picked;
+	scanf("%d %d", &L, &C);
 	for (int i = 0; i < C; i++) {
+		char ch;
 		cin >> ch;
-		charset.push_back(ch);
+		alpha.push_back(ch);
 	}
-	sort(charset.begin(), charset.end());
-	pick(C, picked, L, 0);
+	sort(alpha.begin(), alpha.end());
+	backtrack(alpha, picked, 0);
 	return 0;
 }
